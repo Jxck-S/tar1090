@@ -4505,6 +4505,7 @@ function refreshFeatures() {
 
         for (let col of columns) {
             sortableColumns.append(`<li class="ui-state-default" id="${prefix + col.id}"></li>`);
+            const li = jQuery("#" + prefix + col.id);
 
             new Toggle({
                 key: col.toggleKey,
@@ -4520,8 +4521,10 @@ function refreshFeatures() {
             // and proxy clicks from LI to the inner element
             const inner = li.children().first();
             if (inner.length) {
+                const checkbox = inner.find('.settingsCheckbox');
+
                 // Initial sync
-                if (inner.hasClass('settingsCheckboxChecked')) {
+                if (checkbox.hasClass('settingsCheckboxChecked')) {
                     li.addClass('settingsCheckboxChecked');
                 }
 
@@ -4529,7 +4532,7 @@ function refreshFeatures() {
                 const observer = new MutationObserver(function (mutations) {
                     mutations.forEach(function (mutation) {
                         if (mutation.attributeName === "class") {
-                            if (inner.hasClass('settingsCheckboxChecked')) {
+                            if (checkbox.hasClass('settingsCheckboxChecked')) {
                                 li.addClass('settingsCheckboxChecked');
                             } else {
                                 li.removeClass('settingsCheckboxChecked');
@@ -4537,12 +4540,12 @@ function refreshFeatures() {
                         }
                     });
                 });
-                observer.observe(inner[0], { attributes: true });
+                observer.observe(checkbox[0], { attributes: true });
 
                 // Proxy click
                 li.on('click', function (e) {
-                    if (e.target !== inner[0] && !jQuery.contains(inner[0], e.target)) {
-                        inner.trigger('click');
+                    if (e.target !== checkbox[0] && !jQuery.contains(checkbox[0], e.target)) {
+                        checkbox.trigger('click');
                     }
                 });
 
@@ -4559,6 +4562,12 @@ function refreshFeatures() {
                     'align-items': 'center',
                     'justify-content': 'center'
                 });
+                inner.find('.settingsText').css({
+                    'padding': '0'
+                });
+                checkbox.hide();
+
+
             }
         }
     }

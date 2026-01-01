@@ -430,8 +430,8 @@ html.dark .infoBlockTitleText {
 }
 
 .altitudeFilterInput {
-    width: calc( 50px * var(--SCALE));
-    height:  calc(15px * var(--SCALE));
+    width: calc(70px * var(--SCALE));
+    height: calc(24px * var(--SCALE));
     color:var(--TXTCOLOR2);
     background-color: var(--BGCOLOR2);
     border: 1px solid rgba(0, 0, 0, 0.1);
