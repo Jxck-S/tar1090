@@ -2952,28 +2952,10 @@ function initMap() {
             jQuery(".layer-switcher .panel").css("background", "var(--BGCOLOR1)");
             jQuery(".layer-switcher .panel").css("border", "4px solid var(--BGCOLOR1)");
             if (state) {
-                root.style.setProperty("--BGCOLOR1", '#313131');
-                root.style.setProperty("--BGCOLOR2", '#242424');
-                root.style.setProperty("--TXTCOLOR1","#BFBFBF");
-                root.style.setProperty("--TXTCOLOR2","#D8D8D8");
-                root.style.setProperty("--TXTCOLOR3","#a8a8a8");
-                //invert the "x" images
-                jQuery(".infoblockCloseBox").css('filter','invert(100%)');
-                jQuery(".infoblockCloseBox").css(' -webkit-filter','invert(100%)');
-                jQuery(".settingsCloseBox").css('filter','invert(100%)');
-                jQuery(".settingsCloseBox").css(' -webkit-filter','invert(100%)');
+                root.classList.add('dark');
                 tableColors = tableColorsDark;
             } else {
-                root.style.setProperty("--BGCOLOR1", '#F8F8F8');
-                root.style.setProperty("--BGCOLOR2", '#CCCCCC');
-                root.style.setProperty("--TXTCOLOR1","#003f4b");
-                root.style.setProperty("--TXTCOLOR2","#050505");
-                root.style.setProperty("--TXTCOLOR3","#003f4b");
-                jQuery(".infoblockCloseBox").css('filter','invert(0%)');
-                jQuery(".infoblockCloseBox").css(' -webkit-filter','invert(0%)');
-                jQuery(".settingsCloseBox").css('filter','invert(0%)');
-                jQuery(".settingsCloseBox").css(' -webkit-filter','invert(0%)');
-
+                root.classList.remove('dark');
                 tableColors = tableColorsLight;
             }
             if (loadFinished) {
@@ -3423,6 +3405,7 @@ function refreshPhoto(selected) {
 let selCall = null;
 let selIcao = null;
 let selReg = null;
+let selFakeReg = null;
 
 let somethingSelected = false;
 // Refresh the detail window about the plane
@@ -3453,6 +3436,53 @@ function refreshSelected() {
 
     jQuery('#selected_callsign').updateText(selected.name);
 
+    let opperatorICAO = selected.opp_icao;
+    var $selected_opp_icon = $('#selected_opp_icon');
+    var $icon_img = $selected_opp_icon.find('img');
+
+    var $selected_airline_banner = $('#selected_airline_banner');
+    var $banner_img = $selected_airline_banner.find('img');
+    if (opperatorICAO) {
+        // Replace with your element's ID
+        var src = `/opp_logos/${opperatorICAO}.png`;
+        if ($icon_img.length === 0) {
+            // If no img sub-element exists, add it
+            $selected_opp_icon.append(`<img src="${src}" onerror="this.style.display='none'" onload="this.style.display=''";"/>`);
+        } else {
+            // If img sub-element exists, set its src attribute
+            if ($icon_img.attr('src') != src) {
+                $icon_img.attr('src', src);
+                $icon_img.style = {};
+                $icon_img.style.display = '';
+            }
+
+        }
+        if (airlineBanners) {
+            //https://raw.githubusercontent.com/Jxck-S/airline-logos/main/avcodes_banners/AAL.png
+            var src = `https://raw.githubusercontent.com/Jxck-S/airline-logos/main/avcodes_banners/${opperatorICAO}.png`;
+
+            if ($banner_img.length === 0) {
+                // If no img sub-element exists, add it
+                $selected_airline_banner.append(`<img src="${src}" onerror="this.style.display='none'" onload="this.style.display=''";"/>`);
+            } else {
+                // If img sub-element exists, set its src attribute
+                if ($banner_img.attr('src') != src) {
+                    $banner_img.attr('src', src);
+                    $banner_img.style = {};
+                    $banner_img.style.display = '';
+                }
+            }
+        }
+    }
+    else {
+        if ($icon_img.length >= 1) {
+            $icon_img.first().remove();
+        }
+        if ($banner_img.length >= 1) {
+            $banner_img.first().remove();
+        }
+    }
+
     if (showTrace) {
         if (selected.position_time) {
             const date = new Date(selected.position_time * 1000);
@@ -3482,8 +3512,19 @@ function refreshSelected() {
     }
 
     let checkReg = selected.registration + ' ' + selected.dbinfoLoaded;
-    if (checkReg != selReg) {
+    if (checkReg != selReg || (selected.pia && selFakeReg != selected.fake_pia_reg)) {
         selReg = checkReg;
+        selFakeReg = selected.fake_pia_reg
+        let pia_div = document.getElementById("fake_pia");
+        if (selected.pia) {
+            //selected.fake_pia_reg = registration_from_hexid(selected.icao);
+            jQuery('#fake_pia_reg').updateText(selected.fake_pia_reg);
+            pia_div.style.display = "block";
+        }
+        else {
+            jQuery('#fake_pia_reg').updateText("");
+            pia_div.style.display = "none";
+        }
         if (selected.registration) {
             if (flightawareLinks) {
                 jQuery('#selected_registration').html(getFlightAwareIdentLink(selected.registration, selected.registration));
@@ -3634,7 +3675,7 @@ function refreshSelected() {
 
 
     if (oat != null)
-        jQuery('#selected_temp').updateText(Math.round(tat) + ' / ' + Math.round(oat)  + ' °C');
+        jQuery('#selected_temp').updateText(Math.round(tat) + ' / ' + Math.round(oat) + ' °C');
     else
         jQuery('#selected_temp').updateText('n/a');
 
@@ -4474,6 +4515,51 @@ function refreshFeatures() {
                     planeMan.setColumnVis(col.id, state);
                 }
             });
+
+            // Hack: Sync the class from the inner element (created by Toggle) to the LI
+            // and proxy clicks from LI to the inner element
+            const inner = li.children().first();
+            if (inner.length) {
+                // Initial sync
+                if (inner.hasClass('settingsCheckboxChecked')) {
+                    li.addClass('settingsCheckboxChecked');
+                }
+
+                // Observer for class changes
+                const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (mutation.attributeName === "class") {
+                            if (inner.hasClass('settingsCheckboxChecked')) {
+                                li.addClass('settingsCheckboxChecked');
+                            } else {
+                                li.removeClass('settingsCheckboxChecked');
+                            }
+                        }
+                    });
+                });
+                observer.observe(inner[0], { attributes: true });
+
+                // Proxy click
+                li.on('click', function (e) {
+                    if (e.target !== inner[0] && !jQuery.contains(inner[0], e.target)) {
+                        inner.trigger('click');
+                    }
+                });
+
+                // Remove the default styling of the inner element to avoid double-box look
+                // We are styling the LI now.
+                inner.css({
+                    'border': 'none',
+                    'padding': '0',
+                    'margin': '0',
+                    'background': 'transparent',
+                    'width': '100%',
+                    'height': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center'
+                });
+            }
         }
     }
 
@@ -9115,3 +9201,24 @@ globeRateUpdate();
 
 parseURLIcaos();
 initialize();
+
+// Inject close button into Layers Picker panel and handle close event
+function addLayerSwitcherCloseButton() {
+    const checkExist = setInterval(function () {
+        if ($('.layer-switcher .panel').length) {
+            if (!$('.layer-switcher-close-x').length) {
+                $('.layer-switcher .panel').prepend('<button class="layer-switcher-close-x" title="Close">×</button>');
+
+                $(document).on('click', '.layer-switcher-close-x', function (e) {
+                    e.stopPropagation();
+                    $('.layer-switcher').removeClass('shown');
+                });
+            }
+            clearInterval(checkExist);
+        }
+    }, 1000);
+}
+
+$(document).ready(function () {
+    addLayerSwitcherCloseButton();
+});

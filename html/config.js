@@ -28,10 +28,9 @@
 // autoselectCoords = [42, 21];
 
 //SiteShow    = false;           // true to show a center marker
-//SiteName    = "My Radar Site"; // tooltip of the marker
-
-// Update GPS location (keep map centered on GPS location)
-//updateLocation = false;
+//SiteLat     = 45.0;            // position of the marker
+//SiteLon     = 9.0;
+SiteName = "TheAirTraffic"; // tooltip of the marker
 
 // Color controls for the range outline
 //range_outline_color = '#0000DD';
@@ -52,7 +51,7 @@
 // actual_range_show = true;
 
 // which map is displayed to new visitors
-// MapType_tar1090 = "osm";
+MapType_tar1090 = "osm";
 //
 // valid values for the above setting:
 // osm
@@ -204,7 +203,7 @@ ColorByAlt = {
 //SiteCirclesLineDash = [5, 5]; // null - solid line, [5, 5] - dashed line with 5 pixel lines and spaces in between
 
 // Controls page title, righthand pane when nothing is selected
-//PageName = "tar1090";
+PageName = "TheAirTraffic";
 
 // Show country flags by ICAO addresses?
 //ShowFlags = true;
@@ -264,10 +263,7 @@ MapboxAPIKey = null;
 // imageConfigText = "";
 
 //flightawareLinks = false;
-//shareBaseUrl = 'https://adsb.lol/';
-//shareBaseUrl = 'https://globe.adsb.fi/';
-//shareBaseUrl = 'https://globe.airplanes.live/';
-//shareBaseUrl = 'https://globe.adsbexchange.com/';
+shareBaseUrl = 'https://globe.theairtraffic.com/';
 // planespottersLinks = false;
 
 // show links to various registration websites (not all countries)
@@ -342,7 +338,7 @@ HideCols = [
 // show a link to jetphotos, only works if planespottersAPI is disabled
 // jetphotoLinks = false;
 
-// showSil = false;
+showSil = true;
 // this shows small pictures in the details but they need to be provided by the user in the folder /usr/local/share/tar1090/aircraft_sil
 // showPictures needs to be enabled as well
 // to only get these pictures disable the planespottersAPI
@@ -398,27 +394,27 @@ HideCols = [
 
 /*
 tableColors = {
-    unselected: {
-        adsb: "#d8f4ff",
-        mlat:      "#FDF7DD",
-        uat:       "#C4FFDC",
-        satellite: "#C4FFDC",
-        other:     "#d8d8ff",
-        tisb:      "#ffd8e6",
-        unknown:   "#dcdcdc",
-        squawk7500:"#ff5555",
-        squawk7600:"#00ffff",
-        squawk7700:"#ffff00",
-    },
-    selected: {
-        adsb:      "#88DDFF",
-        mlat:      "#F1DD83",
-        uat:       "#66FFA6",
-        satellite: "#66FFA6",
-        other:     "#BEBEFF",
-        tisb:      "#FFC1D8",
-        unknown:   "#bcbcbc",
-    },
+	unselected: {
+		adsb: "#d8f4ff",
+		mlat:      "#FDF7DD",
+		uat:       "#C4FFDC",
+		satellite: "#C4FFDC",
+		other:     "#d8d8ff",
+		tisb:      "#ffd8e6",
+		unknown:   "#dcdcdc",
+		squawk7500:"#ff5555",
+		squawk7600:"#00ffff",
+		squawk7700:"#ffff00",
+	},
+	selected: {
+		adsb:      "#88DDFF",
+		mlat:      "#F1DD83",
+		uat:       "#66FFA6",
+		satellite: "#66FFA6",
+		other:     "#BEBEFF",
+		tisb:      "#FFC1D8",
+		unknown:   "#bcbcbc",
+	},
 };
 */
 

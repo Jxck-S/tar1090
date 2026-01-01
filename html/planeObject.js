@@ -1,5 +1,20 @@
 "use strict";
 
+function extractOperatorICAO(callsign) {
+    // Check if the callsign is null, undefined, or empty
+    if (!callsign || callsign.trim() === '') {
+        return null;
+    }
+
+    // Check if the first three characters are letters and the fourth character is a number
+    if (!/^[A-Z]{3}/.test(callsign) || isNaN(parseInt(callsign[3], 10))) {
+        return null;
+    }
+
+    // Extract the ICAO code (first three characters)
+    return callsign.substring(0, 3);
+}
+
 function PlaneObject(icao) {
     icao = `${icao}`;
 
@@ -14,6 +29,8 @@ function PlaneObject(icao) {
 
     this.numHex = parseInt(icao.replace('~', '1'), 16);
     this.fakeHex = this.numHex > 16777215; // non-icao hex
+
+    this.fake_pia_reg = null;
 
     // most properties are set via this function so they can be reset easily
     this.setNull();
@@ -55,8 +72,9 @@ PlaneObject.prototype.setNull = function() {
     this.flight = null;
     this.flightTs = 0;
     this.name = 'no callsign';
-    this.squawk    = null;
-    this.category  = null;
+    this.opp_icao = null;
+    this.squawk = null;
+    this.category = null;
     this.dataSource = "modeS";
 
     // Basic location information
@@ -2759,7 +2777,7 @@ PlaneObject.prototype.checkVisible = function() {
 };
 
 PlaneObject.prototype.setTypeData = function() {
-	if (g.type_cache == null || !this.icaoType || this.icaoType == this.icaoTypeCache)
+    if (g.type_cache == null || !this.icaoType || this.icaoType == this.icaoTypeCache)
         return;
     this.updateMarker();
     this.icaoTypeCache = this.icaoType;
