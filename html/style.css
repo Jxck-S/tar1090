@@ -268,13 +268,20 @@ select {
 }
 
 .error_box {
-    position: absolute; bottom: calc( 90px * var(--SCALE)); left: calc( 25px * var(--SCALE)); border: calc( 2px * var(--SCALE)) solid red;
-    background-color: #FFFFA3; opacity: 0.75; filter:alpha(opacity=75); padding: calc( 5px * var(--SCALE));
-    color: black;
+    position: absolute; bottom: calc( 90px * var(--SCALE)); left: calc( 25px * var(--SCALE));
+    background-color: rgba(33, 33, 33, 0.95);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: calc(6px * var(--SCALE));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    padding: calc( 8px * var(--SCALE));
     font-weight: bold;
     font-size: var(--FS3);
     line-height: 150%;
     text-align: center;
+    z-index: 2000;
 }
 
 .inaccurate_warning {
@@ -288,9 +295,14 @@ select {
     position: absolute;
     bottom: 5px;
     left: 5px;
-    border: calc( 2px * var(--SCALE)) solid red;
-    background-color: #FFFFA3; opacity: 0.75; filter:alpha(opacity=75); padding: calc( 5px * var(--SCALE));
-    color: black;
+    background-color: rgba(33, 33, 33, 0.95);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: calc(6px * var(--SCALE));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    padding: calc( 8px * var(--SCALE));
     font-size: var(--FS2);
     line-height: 150%;
     text-align: center;
