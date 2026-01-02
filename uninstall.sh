@@ -1,4 +1,15 @@
 #!/bin/bash
+# Uninstallation Logic:
+# 1. Accepts an instance name as an optional argument ($1).
+# 2. If an instance name is provided:
+#    - Removes the specific HTML directory for that instance.
+#    - Stops and disables the systemd service for that instance.
+# 3. If no instance is provided:
+#    - Removes the entire base directory (/usr/local/share/tar1090) and all contents.
+#    - Removes all lighttpd configuration files related to tar1090.
+# 4. Removes the systemd service file and reloads the daemon.
+# 5. Restarts lighttpd (note: this logic currently retains lighttpd references).
+# 6. Leaves the configuration file (/etc/default/tar1090) for manual removal.
 
 instance=tar1090
 echo --------------

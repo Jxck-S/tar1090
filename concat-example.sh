@@ -1,4 +1,22 @@
-# cache busting and concatenation example
+# Concatenation and Cache Busting Logic:
+# 1. 'magic' function:
+#    - Calculates MD5 checksum of a file.
+#    - Renames the file to include the checksum (e.g., all.css -> all_checksum.css).
+#    - Updates the reference in index.html to point to the new renamed file.
+# 2. CSS Concatenation:
+#    - Scans index.html for all <link rel="stylesheet"> tags.
+#    - Removes those tags from index.html.
+#    - Appends the content of each CSS file into a single 'all.css' file.
+#    - Re-inserts a single <link> tag for 'all.css' into index.html at the CSS_ANCHOR.
+#    - Applies the 'magic' function to 'all.css' for cache busting.
+# 3. JS Concatenation:
+#    - Similar to CSS, scans for <script src="..."> tags.
+#    - Removes them and appends their content into 'all.js'.
+#    - Re-inserts a single <script> tag for 'all.js' at the JS_ANCHOR.
+#    - Applies 'magic' to 'all.js' for cache busting.
+# 4. DB Versioning:
+#    - Updates the database folder version in index.html using the latest git commit SHA.
+
 function magic() {
     FN="$1.$2"
     MD5="$1_$(md5sum "$FN" | cut -f1 -d' ').$2"

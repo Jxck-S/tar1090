@@ -1,4 +1,11 @@
 #!/bin/bash
+# How this cache busting works:
+# 1. It calculates the MD5 checksum of specified static files (defaults from cachebust.list).
+# 2. It renames those files to include the checksum in the filename (e.g., style.css -> style_checksum.css).
+#    This "fingerprinting" ensures that if the file content changes, the filename changes, forcing the browser to fetch the new version.
+# 3. It updates references to these renamed files inside 'script.js' and 'index.html' using sed.
+# 4. It also handles 'script.js' specifically, renaming it and updating its reference in 'index.html'.
+
 
 set -e
 trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR

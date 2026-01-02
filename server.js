@@ -1,3 +1,10 @@
+/**
+ * tar1090 Development Server:
+ * 1. Serves static files from the 'html' directory (allowing local frontend testing).
+ * 2. Proxies API requests to globe.theairtraffic.com (fetching live data).
+ * 3. Supports a '--no-proxy' flag to run without upstream data.
+ * 4. Configures proxy headers to mimic a browser and avoid CORS issues.
+ */
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');

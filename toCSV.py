@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# JSON to CSV Conversion Logic:
+# 1. Reads a JSON file passed as a command-line argument.
+# 2. Extracts 'timestamp' (the base time) and 'trace' (the list of flight data points).
+# 3. For each data point in the 'trace' list:
+#    - Calculates the absolute timestamp by adding the offset (state[0]) to the base timestamp.
+#    - Extracts latitude, longitude, altitude, ground speed, and track.
+#    - Prints these values as a comma-separated string (CSV format).
+
 
 import sys, json
 

@@ -1,4 +1,17 @@
 #!/bin/bash
+# tar1090 Background Processing Logic:
+# 1. Initialization: Sets history intervals and sizes. Defaults to 8s intervals and 450 entries.
+# 2. Data Pruning (prune): Uses jq to compress raw aircraft.json into a minimal format for history.
+# 3. History Management (Main Loop):
+#    - Every $INTERVAL, it prunes the source aircraft.json and saves it as history_$date.json.
+#    - It maintains 'current_small.gz' and 'current_large.gz' as sliding windows of the most recent data.
+#    - Every $CHUNK_SIZE intervals, it compiles all accumulated history into a permanent compressed chunk (e.g., chunk_12345.gz).
+# 4. Chunk Indexing (newChunk):
+#    - Maintains 'chunk_list' and 'chunk_list_all'.
+#    - Updates 'chunks.json', which coordinates the frontend's loading of historical segments.
+# 5. External Data Integration:
+#    - Periodically fetches and integrates UAT (978.json) and Plane Finder (pf.json) data if enabled.
+
 
 set -e
 trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
