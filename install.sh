@@ -24,6 +24,7 @@ if [[ -n "$4" ]] && grep -qs -e 'tar1090' "$4/install.sh"; then git_source="$4";
 
 lighttpd=no
 nginx=no
+RUNBASE="${TAR1090_RUN_DIR:-/run}"
 function useSystemd () { command -v systemctl &>/dev/null; }
 
 gpath="$TAR1090_UPDATE_DIR"
@@ -269,20 +270,25 @@ do
     # don't overwrite existing configuration
     useSystemd && copyNoClobber default /etc/default/"$service"
 
+    mkdir -p "$RUNBASE/$service"
+    if useSystemd; then
+        chown tar1090 "$RUNBASE/$service" || true
+    fi
+
     sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-        -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 95-tar1090-otherport.conf
+        -e "s?RUNBASE?$RUNBASE?g" -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 95-tar1090-otherport.conf
 
     if [[ "$instance" == "webroot" ]]; then
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
+            -e "s?RUNBASE?$RUNBASE?g" -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?/INSTANCE/?/?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
+            -e "s?RUNBASE?$RUNBASE?g" -e "s?/INSTANCE/?/?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
         sed -i -e "s?/INSTANCE?/?g" nginx.conf
     else
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
+            -e "s?RUNBASE?$RUNBASE?g" -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
+            -e "s?RUNBASE?$RUNBASE?g" -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
     fi
 
     if [[ $lighttpd == yes ]] && lighttpd -v | grep -E 'lighttpd/1.4.(5[6-9]|[6-9])' -qs; then
@@ -295,7 +301,8 @@ do
     fi
 
 
-    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" tar1090.service
+    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
+        -e "s?RUNBASE?$RUNBASE?g" tar1090.service
 
     cp -r -T html "$TMP"
     cp -r -T "$gpath/git-db/db" "$TMP/db-$DB_VERSION"
