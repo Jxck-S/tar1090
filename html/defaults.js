@@ -345,6 +345,13 @@ let planespottersAPIurl = "https://api.planespotters.net/pub/photos/";
 // get pictures from planespotting.be
 let planespottingAPI = false;
 
+// Custom Photos API (e.g. for private collections or alternative providers)
+// Requires a URL that returns { "credit": "...", "retrieve_url": "..." }
+// The retrieve_url can be relative or absolute.
+let customPhotosApi = false;
+let customPhotosApiUrl = "";
+let customPhotosClickable = false;
+
 // get flight route from routeApi service default setting (toggle via settings checkbox)
 let useRouteAPI = false;
 // show IATA airport codes instead of ICAO when using the route API

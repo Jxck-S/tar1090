@@ -3309,6 +3309,11 @@ function displayPhoto() {
     }
     let photos = SelectedPlane.psAPIresponse["photos"] || SelectedPlane.psAPIresponse["images"];
     if (!photos || photos.length == 0) {
+        if (typeof customPhotosApi !== 'undefined' && customPhotosApi) {
+            setPhotoHtml("");
+            adjustInfoBlock();
+            return;
+        }
         displaySil();
         adjustInfoBlock();
         return;
@@ -3317,7 +3322,11 @@ function displayPhoto() {
     let photoToPull = photos[0]["thumbnail"]["src"] || photos[0]["thumbnail"];
     let linkToPicture = photos[0]["link"];
     //console.log(linkToPicture);
-    new_html = '<a class=\"link\" href="'+linkToPicture+'" target="_blank" rel="noopener noreferrer"><img id="airplanePhoto" src=' +photoToPull+'></a>';
+    if (typeof customPhotosApi !== 'undefined' && customPhotosApi && typeof customPhotosClickable !== 'undefined' && !customPhotosClickable) {
+        new_html = '<img id="airplanePhoto" src=' + photoToPull + '>';
+   } else {
+        new_html = '<a class=\"link\" href="'+linkToPicture+'" target="_blank" rel="noopener noreferrer"><img id="airplanePhoto" src=' +photoToPull+'></a>';
+   }
     let copyright = photos[0]["photographer"] || photos[0]["user"];
     jQuery('#copyrightInfo').html("<span>Image © " + copyright +"</span>");
     setPhotoHtml(new_html);
@@ -3325,7 +3334,7 @@ function displayPhoto() {
 }
 
 function refreshPhoto(selected) {
-    if (!showPictures || selected.icao[0] == '~' || (!planespottingAPI && !planespottersAPI)) {
+    if (!showPictures || selected.icao[0] == '~' || (!planespottingAPI && !planespottersAPI && !customPhotosApi)) {
         displaySil();
         return;
     }
@@ -3367,7 +3376,51 @@ function refreshPhoto(selected) {
     //console.log(ts/1000 + 'sending psAPI request');
     selected.psAPIresponseTS = ts;
 
-    if (planespottersAPI) {
+    if (customPhotosApi && customPhotosApiUrl && selected.registration) {
+        let req = jQuery.ajax({
+            url: customPhotosApiUrl + selected.registration,
+            dataType: 'json',
+            plane: selected,
+        });
+
+        req.done(function(data) {
+            // Adapt the response to match what displayPhoto expects
+            let baseUrl = "";
+            if (customPhotosApiUrl.startsWith("http")) {
+                try {
+                    const urlObj = new URL(customPhotosApiUrl);
+                    baseUrl = urlObj.origin;
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            let fullUrl = data.retrieve_url;
+            if (baseUrl && fullUrl && fullUrl.startsWith("/")) {
+                fullUrl = baseUrl + fullUrl;
+            }
+
+            let adaptedData = {
+                "photos": [
+                    {
+                        "thumbnail": fullUrl,
+                        "link": fullUrl,
+                        "photographer": data.credit
+                    }
+                ]
+            };
+            this.plane.psAPIresponse = adaptedData;
+            if (SelectedPlane == this.plane) {
+                displayPhoto();
+            }
+        });
+        req.fail(function() {
+            this.plane.psAPIresponse = {'photos': []};
+            if (SelectedPlane == this.plane) {
+                displayPhoto();
+            }
+        });
+    } else if (planespottersAPI) {
         let req = jQuery.ajax({
             url: planespottersAPIurl + urlTail,
             dataType: 'json',
@@ -4857,6 +4910,13 @@ function setPhotoHtml(source) {
     //console.log(source + ' ' + selectedPhotoCache);
     selectedPhotoCache = source;
     jQuery('#selected_photo').html(source);
+
+    if (!source) {
+        jQuery('#photo_container').addClass('hidden');
+        jQuery('#photo_container').css('height', '0px');
+    } else {
+        jQuery('#photo_container').removeClass('hidden');
+    }
 }
 
 function adjustInfoBlock() {

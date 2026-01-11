@@ -314,8 +314,8 @@ HideCols = [
 	"#lon",
 	"#data_source",
 	"#military",
-    "#wd",
-    "#ws",
+	"#wd",
+	"#ws",
 ]
 */ // remove this line to modify columns (and the one at the start)
 
@@ -325,6 +325,10 @@ HideCols = [
 // planespottersAPI = true;
 // get pictures from planespotting.be
 // planespottingAPI = true;
+
+// Custom Photos API - TheAirTraffic
+customPhotosApi = true;
+customPhotosApiUrl = "https://theairtraffic.com/iapi/photos/details/";
 
 // get flight route from routeApi service default setting (toggle via settings checkbox)
 // useRouteAPI = false;
